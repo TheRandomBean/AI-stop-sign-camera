@@ -1,3 +1,4 @@
 # Ignore PyTorch model weights and checkpoints
 *.pt
 *.pth
+*.mp4
