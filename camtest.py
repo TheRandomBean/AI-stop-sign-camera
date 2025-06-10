@@ -10,8 +10,13 @@ violationFile = "violations.csv"
 cam = "cam1" # proof of concept, will be replaced with camera location
 videofile = "fullstop.mp4"
 debug = True
-STOP_ZONE = [(266, 275), (375, 247), (340, 233), (233, 250)]
+car_states = {}  # key = ID, value = {'entered': True, 'stopped': False, 'frames': []}
+frame_count = 0
+stop_tolerance = 3
+cap = cv2.VideoCapture(2)
+model = YOLO("yolov8n.pt")
 
+STOP_ZONE = [(266, 275), (375, 247), (340, 233), (233, 250)]
 COCO_CLASSES = [
     "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train",
     "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench",
@@ -36,23 +41,10 @@ def filewrite(file, frame, obj_id, cam):
         print("[!] Violation logged")
         pass
 
-# Load YOLOv8 model
-model = YOLO("yolov8n.pt")  # Use 'yolov8s.pt' for better accuracy
-
-# Load video
-cap = cv2.VideoCapture(2)
-
-# Define a region where cars should stop (ROI) — change these coordinates!
-
-
 # Helper to check if center point is in ROI
 def point_in_roi(point, roi_pts):
     return cv2.pointPolygonTest(np.array(roi_pts, dtype=np.int32), point, False) >= 0
 
-# Basic car tracker state
-car_states = {}  # key = ID, value = {'entered': True, 'stopped': False, 'frames': []}
-
-frame_count = 0
 
 while cap.isOpened():
     start_time = time.time()
@@ -136,11 +128,13 @@ while cap.isOpened():
     # Show video
     end_time = time.time()
     fps = 1 / (end_time - start_time + 1e-8)  # Avoid division by zero
+
     if debug == True:    
         cv2.putText(frame, f"FPS: {fps:.2f}", (10, 30),
         cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
         cv2.putText(frame, f"Frame: {frame_count}", (10, 50),
         cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+    
     cv2.imshow("Stop Sign Detection", frame)
     if cv2.waitKey(1) == ord('q'):
         break
