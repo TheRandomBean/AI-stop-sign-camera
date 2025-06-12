@@ -51,3 +51,7 @@ output:
   violation_file: violations.csv
 ```
 **Note:** files must remain as a CSV file, if not provided one the script will provide an error.
+
+## Images
+![preview_violation](https://github.com/user-attachments/assets/10a26197-24a3-45ee-954b-8be1339b0f97)
+
