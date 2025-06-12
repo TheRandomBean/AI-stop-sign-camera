@@ -8,21 +8,29 @@ from ultralytics.utils import LOGGER
 LOGGER.setLevel("ERROR")
 
 def config_load(filename, location, setting):
-    with open(filename, "r") as output:
-        config = yaml.safe_load(output)
-    return config[location][setting]
+    try:
+        with open(filename, "r") as output:
+            config = yaml.safe_load(output)
+        return config[location][setting]
+    except FileNotFoundError:
+        print("[!] config.yaml was not detected, please go to https://github.com/TheRandomBean/AI-stop-sign-camera and copy the config file. exitting...")
+        exit()
 
 violationFile = config_load("config.yaml", "output", "violation_file")
 cam = config_load("config.yaml", "camera", "location")
 video_source = config_load("config.yaml", "camera", "source")
 debug = config_load("config.yaml", "settings", "use_debug")
 stop_tolerance = config_load("config.yaml", "detection", "stop_tolerance")
-model = YOLO(config_load("config.yaml", "app", "model"))
+try:
+    model = YOLO(config_load("config.yaml", "app", "model"))
+except FileNotFoundError:
+    print("[!] Model file not detected. Default is yolov8n.pt. exitting...")
+    exit()
 STOP_ZONE = config_load("config.yaml", "camera", "stop_zone")
 
 cap = cv2.VideoCapture(video_source)
 frame_count = 0
-car_states = {}  # key = ID, value = {'entered': True, 'stopped': False, 'frames': []}
+car_states = {}
 COCO_CLASSES = [
     "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train",
     "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench",
@@ -45,10 +53,10 @@ def filewrite(file, frame, obj_id, cam):
         write = writer(csvfile)
         write.writerow(row)
         csvfile.close()
-        print("[#] Violation logged")
+        print(f"[#] Violation logged to file: {file}")
         pass
 
-# Helper to check if center point is in ROI
+
 def point_in_roi(point, roi_pts):
     return cv2.pointPolygonTest(np.array(roi_pts, dtype=np.int32), point, False) >= 0
 
@@ -61,9 +69,8 @@ while cap.isOpened():
         break
 
     frame_count += 1
-    results = model.track(frame, persist=True, classes=[2, 11])  # class 2 = car
+    results = model.track(frame, persist=True, classes=[2, 11])
 
-    # Draw ROI
     cv2.polylines(frame, [np.array(STOP_ZONE, dtype=np.int32)], isClosed=True, color=(0, 255, 0), thickness=2)
     if results[0].boxes.id is not None:
         ids = results[0].boxes.id.cpu().numpy().astype(int)
@@ -107,7 +114,7 @@ while cap.isOpened():
             
 
             cv2.putText(frame, f'ID: {obj_id}, State: {state}, obj: {class_name}', (x1, y1 - 10),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
 
             # Track car entry into stop zone
             if point_in_roi(center, STOP_ZONE):
@@ -125,7 +132,7 @@ while cap.isOpened():
             else:
                 # Outside ROI, check for violation
                 if car_states[obj_id]['entered'] and not car_states[obj_id]['stopped']:
-                    cv2.putText(frame, f'violation {obj_id}', (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), 2)
+                    #cv2.putText(frame, f'violation {obj_id}', (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), 2)
                     print(f"[#] Car {obj_id} ran stop sign at frame {frame_count}")
                     filewrite(video_source, frame_count, obj_id, cam)
                     cv2.polylines(frame, [np.array(STOP_ZONE, dtype=np.int32)], isClosed=True, color=(0, 0, 255), thickness=2)

@@ -14,25 +14,31 @@ yaml.add_representer(list, represent_list_in_flow_style)
 
 
 def config_save(filename, location, setting, data):
-    with open(filename, "r") as f:
-        config = yaml.safe_load(f)
+    try:
+        with open(filename, "r") as f:
+            config = yaml.safe_load(f)
     
-    if location not in config:
-        config[location] = {}
-        print(f"[?] Couldn't find location '{location}' in config.yaml")
-        print(f"[!] Creating new location '{location}' in config.yaml")
-    config[location][setting] = data
+        if location not in config:
+            config[location] = {}
+            print(f"[?] Couldn't find location '{location}' in config.yaml")
+            print(f"[!] Creating new location '{location}' in config.yaml")
+        config[location][setting] = data
 
-    with open(filename, "w") as f:
-        yaml.dump(config, f, sort_keys=False)
+        with open(filename, "w") as f:
+            yaml.dump(config, f, sort_keys=False)
+    except FileNotFoundError:
+        print("[!] config.yaml was not detected, please go to https://github.com/TheRandomBean/AI-stop-sign-camera and copy the config file. exitting...")
+        exit()
+    print("please tlel me you can see this")
 
 def click_event(event, x, y, flags, params):
     if event == cv2.EVENT_LBUTTONDOWN:
         points.append([x, y])
         print(f"Point {len(points)}: ({x}, {y})")
 
-video_path = config_load("config.yaml", "camera", "source") 
-cap = cv2.VideoCapture(2)
+
+cap = cv2.VideoCapture(config_load("config.yaml", "camera", "source"))
+
 
 ret, frame = cap.read()
 cap.release()
@@ -47,6 +53,9 @@ cv2.setMouseCallback("Click to define stop zone", click_event)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
+if not len(points) == 4:
+    print("[?] You need to select 4 points to define a polygon. Did you forget to click 4?")
+    exit()
+
 config_save("config.yaml", "camera", "stop_zone", points)
-print("[?] STOP_ZONE saved to config.yaml")
-print("Your STOP_ZONE points:", points)
+print(f"[#] STOP_ZONE saved to config.yaml: {points}")
