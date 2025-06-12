@@ -1,22 +1,28 @@
 import cv2
 import numpy as np
 import time
+import yaml
 from csv import * 
 from ultralytics import YOLO
 from ultralytics.utils import LOGGER
 LOGGER.setLevel("ERROR")
 
-violationFile = "violations.csv"
-cam = "cam1" # proof of concept, will be replaced with camera location
-videofile = "fullstop.mp4"
-debug = True
-car_states = {}  # key = ID, value = {'entered': True, 'stopped': False, 'frames': []}
-frame_count = 0
-stop_tolerance = 3
-cap = cv2.VideoCapture(2)
-model = YOLO("yolov8n.pt")
+def config_load(filename, location, setting):
+    with open(filename, "r") as output:
+        config = yaml.safe_load(output)
+    return config[location][setting]
 
-STOP_ZONE = [(266, 275), (375, 247), (340, 233), (233, 250)]
+violationFile = config_load("config.yaml", "output", "violation_file")
+cam = config_load("config.yaml", "camera", "location")
+video_source = config_load("config.yaml", "camera", "source")
+debug = config_load("config.yaml", "settings", "use_debug")
+stop_tolerance = config_load("config.yaml", "detection", "stop_tolerance")
+model = YOLO(config_load("config.yaml", "app", "model"))
+STOP_ZONE = config_load("config.yaml", "camera", "stop_zone")
+
+cap = cv2.VideoCapture(video_source)
+frame_count = 0
+car_states = {}  # key = ID, value = {'entered': True, 'stopped': False, 'frames': []}
 COCO_CLASSES = [
     "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train",
     "truck", "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench",
@@ -30,6 +36,7 @@ COCO_CLASSES = [
     "toaster", "sink", "refrigerator", "book", "clock", "vase", "scissors", "teddy bear",
     "hair drier", "toothbrush"
 ]
+
 
 
 def filewrite(file, frame, obj_id, cam):
