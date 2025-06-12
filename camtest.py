@@ -126,7 +126,7 @@ while cap.isOpened():
                 if car_states[obj_id]['entered'] and not car_states[obj_id]['stopped']:
                     cv2.putText(frame, f'violation {obj_id}', (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), 2)
                     print(f"[!] Car {obj_id} ran stop sign at frame {frame_count}")
-                    filewrite(videofile, frame_count, obj_id, cam)
+                    filewrite(video_source, frame_count, obj_id, cam)
                     cv2.polylines(frame, [np.array(STOP_ZONE, dtype=np.int32)], isClosed=True, color=(0, 0, 255), thickness=2)
                     car_states[obj_id]['stopped'] = True  # Avoid duplicate logs
                     cv2.imshow("Violation Frame", frame)
