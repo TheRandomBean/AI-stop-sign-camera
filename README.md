@@ -17,22 +17,14 @@ You can modify several settings in the YAML file to change how the script behave
 app:
   version: 1.0
   model: yolov8n.pt
-
 camera:
   source: fullstop.mp4
   location: cam1
-  stop_zone:
-  - [266, 275]
-  - [375, 247]
-  - [340, 233]
-  - [233, 250]
-
+  stop_zone: [[139, 116], [273, 37], [420, 171], [313, 307]]
 detection:
   stop_tolerance: 3
-
 output:
   violation_file: violations.csv
-
 settings:
   use_debug: false
 ```

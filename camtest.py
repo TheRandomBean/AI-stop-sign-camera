@@ -45,7 +45,7 @@ def filewrite(file, frame, obj_id, cam):
         write = writer(csvfile)
         write.writerow(row)
         csvfile.close()
-        print("[!] Violation logged")
+        print("[#] Violation logged")
         pass
 
 # Helper to check if center point is in ROI
@@ -57,6 +57,7 @@ while cap.isOpened():
     start_time = time.time()
     ret, frame = cap.read()
     if not ret:
+        print("[!] Unable to read video frame. Please check the video source.")
         break
 
     frame_count += 1
@@ -125,7 +126,7 @@ while cap.isOpened():
                 # Outside ROI, check for violation
                 if car_states[obj_id]['entered'] and not car_states[obj_id]['stopped']:
                     cv2.putText(frame, f'violation {obj_id}', (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), 2)
-                    print(f"[!] Car {obj_id} ran stop sign at frame {frame_count}")
+                    print(f"[#] Car {obj_id} ran stop sign at frame {frame_count}")
                     filewrite(video_source, frame_count, obj_id, cam)
                     cv2.polylines(frame, [np.array(STOP_ZONE, dtype=np.int32)], isClosed=True, color=(0, 0, 255), thickness=2)
                     car_states[obj_id]['stopped'] = True  # Avoid duplicate logs

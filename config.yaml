@@ -1,21 +1,13 @@
 app:
   version: 1.0
   model: yolov8n.pt
-
 camera:
-  source: fullstop.mp4 # If using a camera, replace with the camera index (0 for default camera)
+  source: fullstop.mp4
   location: cam1
-  stop_zone:
-  - [266, 275]
-  - [375, 247]
-  - [340, 233]
-  - [233, 250]
-
+  stop_zone: [[139, 116], [273, 37], [420, 171], [313, 307]]
 detection:
   stop_tolerance: 3
-
 output:
   violation_file: violations.csv
-
 settings:
-  use_debug: false # When set true, debug info such as frame count and FPS will be displayed
+  use_debug: false
