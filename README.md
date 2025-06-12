@@ -15,7 +15,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-Before running the camtest.py you first need to change the source in the settings, once done run the pointgrabber.py file, and then select the points for your stopping zone. once you have clicked all 4 points, run the camtest.py you should see the window pop up, and your stop zone drawn.
+Before running the camtest.py you first need to [change the source](https://github.com/TheRandomBean/AI-stop-sign-camera?tab=readme-ov-file#switching-input-sources) in the settings, once done run the pointgrabber.py file, and then select the points for your stopping zone. once you have clicked all 4 points, run the camtest.py you should see the window pop up, and your stop zone drawn.
 
 ## Setting
 You can modify several settings in the YAML file to change how the script behaves.
