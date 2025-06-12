@@ -12,14 +12,14 @@ pip install -r requirements.txt
 ```
 
 ## Setting
-To configure the 
+You can modify several settings in the YAML file to change how the script behaves.
 ```yaml
 app:
   version: 1.0
   model: yolov8n.pt
 
 camera:
-  source: fullstop.mp4 # If using a camera, replace with the camera index (0 for default camera)
+  source: fullstop.mp4
   location: cam1
   stop_zone:
   - [266, 275]
@@ -34,5 +34,11 @@ output:
   violation_file: violations.csv
 
 settings:
-  use_debug: false # When set true, debug info such as frame count and FPS will be displayed
+  use_debug: false
+```
+from example, to change whether the script uses a MP4 file or a camera you can change to 0 (0 is the default camera)
+
+```yaml
+camera:
+  source: 0
 ```
