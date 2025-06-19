@@ -3,3 +3,5 @@
 *.pth
 *.mp4
 env/
+LocalFolders/
+!Rollingstop.mp4
