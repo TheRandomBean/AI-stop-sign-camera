@@ -15,7 +15,27 @@ pip install -r requirements.txt
 
 ## Usage
 
-Before running the camtest.py you first need to [change the source](https://github.com/TheRandomBean/AI-stop-sign-camera?tab=readme-ov-file#switching-input-sources) in the settings, once done run the pointgrabber.py file, and then select the points for your stopping zone. once you have clicked all 4 points, run the camtest.py you should see the window pop up, and your stop zone drawn.
+
+### Selecting points for a stop zone
+Before running the camtest.py you first need to [change the source](https://github.com/TheRandomBean/AI-stop-sign-camera?tab=readme-ov-file#switching-input-sources) in the settings.
+
+once the source has been selected run the pointgrabber.py file
+
+```bash
+cd path/to/the/folder
+python pointgrabber.py
+```
+
+ and then select the points for your stopping zone. once you have clicked all 4 points.
+
+ ### Running the detection script
+run the camtest.py you should see the window pop up, and your stop zone drawn.
+```bash
+cd path/to/the/folder
+python camtest.py
+``` 
+
+when a violation has been detected it will open up a new window, showing the cars ID number.
 
 ## Setting
 You can modify several settings in the YAML file to change how the script behaves.
