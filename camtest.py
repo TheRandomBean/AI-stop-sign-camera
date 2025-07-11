@@ -2,31 +2,29 @@ import cv2
 import numpy as np
 import time
 import yaml
+import torch
+import startup
 from csv import * 
 from ultralytics import YOLO
 from ultralytics.utils import LOGGER
 LOGGER.setLevel("ERROR")
 
-def config_load(filename, location, setting):
-    try:
-        with open(filename, "r") as output:
-            config = yaml.safe_load(output)
-        return config[location][setting]
-    except FileNotFoundError:
-        print("[!] config.yaml was not detected, please go to https://github.com/TheRandomBean/AI-stop-sign-camera and copy the config file. exitting...")
-        exit()
-
-violationFile = config_load("config.yaml", "output", "violation_file")
-cam = config_load("config.yaml", "camera", "location")
-video_source = config_load("config.yaml", "camera", "source")
-debug = config_load("config.yaml", "settings", "use_debug")
-stop_tolerance = config_load("config.yaml", "detection", "stop_tolerance")
+violationFile = startup.config_load("config.yaml", "output", "violation_file")
+cam = startup.config_load("config.yaml", "camera", "location")
+video_source = startup.config_load("config.yaml", "camera", "source")
+debug = startup.config_load("config.yaml", "settings", "use_debug")
+stop_tolerance = startup.config_load("config.yaml", "detection", "stop_tolerance")
 try:
-    model = YOLO(config_load("config.yaml", "app", "model"))
+    model = YOLO(startup.config_load("config.yaml", "app", "model"))
+    modeloutput = startup.config_load("config.yaml", "app", "model")
+    model.to(startup.CudaCheck())
+    print(f"[#] Using device: {startup.CudaCheck()}")
+    print(f"[#] Using model: {modeloutput}")
 except FileNotFoundError:
     print("[!] Model file not detected. Default is yolov8n.pt. exitting...")
     exit()
-STOP_ZONE = config_load("config.yaml", "camera", "stop_zone")
+STOP_ZONE = startup.config_load("config.yaml", "camera", "stop_zone")
+
 
 cap = cv2.VideoCapture(video_source)
 frame_count = 0

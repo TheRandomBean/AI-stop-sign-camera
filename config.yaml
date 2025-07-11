@@ -2,9 +2,9 @@ app:
   version: 1.0
   model: yolov8n.pt
 camera:
-  source: m2-res_480p.mp4
+  source: 2
   location: cam1
-  stop_zone: [[139, 116], [273, 37], [420, 171], [313, 307]]
+  stop_zone: [[196, 130], [364, 64], [221, 293], [425, 278]]
 detection:
   stop_tolerance: 3
 output:
