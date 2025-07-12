@@ -5,3 +5,4 @@
 env/
 LocalFolders/
 !Rollingstop.mp4
+__pycache__/
